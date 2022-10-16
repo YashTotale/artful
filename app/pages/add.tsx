@@ -2,6 +2,7 @@
 import { FC, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
+  Control,
   Controller,
   SubmitHandler,
   useController,
@@ -9,7 +10,12 @@ import {
 } from "react-hook-form";
 
 // Style Imports
-import { FormHelperText, InputAdornment, TextField } from "@mui/material";
+import {
+  capitalize,
+  FormHelperText,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
 import { btn, btnAccent } from "../styles/button";
 import { textMedium, textSmall } from "../styles/text";
 
@@ -25,25 +31,8 @@ interface Inputs {
 
 const NewArt: FC = () => {
   const { control, handleSubmit, formState } = useForm<Inputs>();
-  const {
-    field: { ref: nameRef, ...nameProps },
-  } = useController({
-    name: "name",
-    control,
-    rules: { required: "Name is required" },
-    defaultValue: "",
-  });
-  const {
-    field: { ref: priceRef, ...priceProps },
-  } = useController({
-    name: "price",
-    control,
-    rules: { required: "Price is required" },
-    defaultValue: "",
-  });
-
   const [acceptedFile, setFile] = useState<FileWithPreview | null>(null);
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       "image/jpeg": [".jpg", ".jpeg"],
     },
@@ -106,6 +95,7 @@ const NewArt: FC = () => {
                   borderStyle: "dashed",
                   backgroundColor: "#fafafa",
                   color: "#bdbdbd",
+                  cursor: "pointer",
                   outline: "none",
                   transition: "border .24s ease-in-out",
                 },
@@ -117,8 +107,9 @@ const NewArt: FC = () => {
                 })}
               />
               <p>
-                Drag 'n' drop an image of your artwork here, or click to select
-                an image
+                {isDragActive
+                  ? "Drop here..."
+                  : "Drag 'n' drop an image of your artwork here, or click to select an image"}
               </p>
             </div>
           );
@@ -187,57 +178,15 @@ const NewArt: FC = () => {
           )}
         </div>
         <div css={{ marginLeft: "16px" }}>
-          <TextField
-            {...nameProps}
-            inputRef={nameRef}
-            label="Name"
-            variant="outlined"
-            fullWidth
-            type="text"
-            error={!!formState.errors.name}
-            helperText={formState.errors.name?.message}
-            sx={{
-              fontSize: "100%",
-              marginBottom: "16px",
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "100%",
-              },
-            }}
-            InputProps={{
-              sx: {
-                fontSize: "100%",
-              },
-            }}
-          />
-          <TextField
-            {...priceProps}
-            inputRef={priceRef}
-            label="Price"
-            variant="outlined"
-            type="text"
-            error={!!formState.errors.price}
-            helperText={formState.errors.price?.message}
-            fullWidth
-            sx={{
-              fontSize: "100%",
-            }}
-            InputLabelProps={{
-              sx: {
-                fontSize: "100%",
-              },
-            }}
-            InputProps={{
-              sx: {
-                fontSize: "100%",
-              },
-              startAdornment: (
-                <InputAdornment position="start">
-                  <span css={{ fontSize: "100%" }}>$</span>
-                </InputAdornment>
-              ),
-            }}
+          <InputField name="name" control={control} />
+          <InputField
+            name="price"
+            control={control}
+            startAdornment={
+              <InputAdornment position="start">
+                <span css={{ fontSize: "100%" }}>$</span>
+              </InputAdornment>
+            }
           />
         </div>
       </aside>
@@ -255,6 +204,59 @@ const NewArt: FC = () => {
         </button>
       </div>
     </form>
+  );
+};
+
+interface InputFieldProps {
+  name: keyof Inputs;
+  control: Control<Inputs>;
+  startAdornment?: JSX.Element;
+  required?: boolean;
+  label?: string;
+}
+
+const InputField: FC<InputFieldProps> = (props) => {
+  const {
+    field: { ref, ...priceProps },
+    formState,
+  } = useController({
+    name: props.name,
+    control: props.control,
+    rules: { required: props.required ?? "This field is required" },
+    defaultValue: "",
+  });
+
+  const error = formState.errors[props.name];
+  const label =
+    props.label ??
+    `${capitalize(props.name)}${props.required !== false ? "*" : ""}`;
+
+  return (
+    <TextField
+      {...priceProps}
+      inputRef={ref}
+      label={label}
+      variant="outlined"
+      type="text"
+      error={!!error}
+      helperText={error?.message}
+      fullWidth
+      sx={{
+        fontSize: "100%",
+        marginBottom: "16px",
+      }}
+      InputLabelProps={{
+        sx: {
+          fontSize: "100%",
+        },
+      }}
+      InputProps={{
+        sx: {
+          fontSize: "100%",
+        },
+        startAdornment: props.startAdornment,
+      }}
+    />
   );
 };
 

@@ -79,7 +79,7 @@ const Navbar: FC = () => {
             margin: "0 2.4rem",
           }}
         ></span>
-        <Link href="/new">
+        <Link href="/add">
           <button css={{ ...btn, ...btnAccent, ...textSmall, ...textMedium }}>
             Add Art
           </button>
