@@ -45,6 +45,10 @@ const createResponse = await client.CreateContentObject({
 const objectID = createResponse.id;
 const writeToken = createResponse.write_token;
 
+/**
+ * Upload the files (combine later).
+ */
+
 client.uploadFiles({
   libraryId: LIBRARY_ID,
   objectId: objectID,
@@ -67,6 +71,7 @@ const config = {
   mainObjectId: MAIN_OBJECT_ID,
 };
 
+const Init = as;
 marketplace = new Marketplace(config);
 
 client.SetSigner({ signer });

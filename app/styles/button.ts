@@ -1,7 +1,7 @@
 import { colorAccent, colorAccentHover, colorWhite } from "./colors";
 
 export const btn = {
-  padding: "1.4rem 3.2rem",
+  padding: "0.5rem 3.2rem",
   border: "0",
   outline: "none",
   borderRadius: "32px",

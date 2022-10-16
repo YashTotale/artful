@@ -7,6 +7,7 @@ import { text, textMedium, textRegular, textSmall } from "../styles/text";
 import { listItem, listItemInline } from "../styles/list";
 import { btn, btnAccent, btnLink } from "../styles/button";
 import { colorGrey } from "../styles/colors";
+import Link from "next/link";
 
 const Navbar: FC = () => {
   const theme = useTheme();
@@ -29,22 +30,25 @@ const Navbar: FC = () => {
         marginBottom: isSizeMedium ? "3.1rem" : "5.1rem",
       }}
     >
-      <div
-        css={{
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <img
-          src="images/logo.png"
-          alt="Artful Logo"
+      <Link href="/">
+        <div
           css={{
-            height: 40,
-            marginRight: "8px",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
           }}
-        />
-        <span css={{ ...text, ...textMedium }}>Artful</span>
-      </div>
+        >
+          <img
+            src="images/logo.png"
+            alt="Artful Logo"
+            css={{
+              height: 40,
+              marginRight: "8px",
+            }}
+          />
+          <span css={{ ...text, ...textMedium }}>Artful</span>
+        </div>
+      </Link>
       <nav
         css={{
           display: isSizeMedium ? "none" : "flex",
@@ -52,13 +56,15 @@ const Navbar: FC = () => {
         }}
       >
         <ul>
-          <li css={liStyle}>Marketplace</li>
+          <Link href="/marketplace">
+            <li css={liStyle}>Marketplace</li>
+          </Link>
         </ul>
-        <button
+        {/* <button
           css={{ ...btn, ...btnLink, ...text, ...textSmall, ...textMedium }}
         >
           Login
-        </button>
+        </button> */}
         <span
           css={{
             height: "2.4rem",
@@ -67,9 +73,11 @@ const Navbar: FC = () => {
             margin: "0 2.4rem",
           }}
         ></span>
-        <button css={{ ...btn, ...btnAccent, ...textSmall, ...textMedium }}>
-          Register
-        </button>
+        <Link href="/new">
+          <button css={{ ...btn, ...btnAccent, ...textSmall, ...textMedium }}>
+            Upload Art
+          </button>
+        </Link>
       </nav>
     </div>
   );
