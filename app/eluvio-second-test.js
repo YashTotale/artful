@@ -10,7 +10,7 @@ const INPUT_CURRENCY = "USD"; // USD for now
 const INPUT_MAX_COPIES = 1; //since only one unique art piece
 
 const INPUT_FILESIZE = 0;
-const INPUT_FILENAME = "";
+const INPUT_FILENAME = "file_to_upload"; // every time the corresp function below is called, a new map is created. so each file name doesn't need to be unique.
 const MAIN_OBJECT_ID = "iq__suqRJUt2vmXsyiWS5ZaSGwtFU9R"; // No idea what this does
 const CONFIG_URL = "https://main.net955305.contentfabric.io"; //
 const MARKETPLACE_HASH =
@@ -140,3 +140,9 @@ const res = await marketplace.MarketplaceAddItem({
 });
 
 client.SetSigner({ signer });
+
+// 1. section thing for add marketplace
+// 2. integrate with yash's form
+
+//Remove:
+// 3. main thing where we take in a wallet and painting sku or smth and return if its the real owner
