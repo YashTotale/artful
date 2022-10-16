@@ -63,6 +63,8 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   const MARKETPLACE_HASH =
     "hq__FKuEpQG3hRQJVgwpnEzdpbNaoHm3wLVCAV8dmh1f6az8oDbUBcTAyVbTP8XarpsW8BS3CeLQqC";
 
+  const MARKETPLACE_OBJECTID = "iq__2zotYUbpVuf3Z6vUw7UpXR8BPx1c";
+
   const LIBRARY_ID = "ilib3dSvxMaDDdUYpnt35PEF5eDaoy9F";
   const NFT_TEMPLATE_HASH =
     "hq__2Wuci8wepZr9RksFxmfuXSZipH4Tqa1YAVZWQmo6ykvcoWUbN2oTgz9kZgbWXkDLKoi3PrnSm3"; // Corresponds to the ELuv.io Version hash of images
@@ -120,6 +122,9 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
               permission: {
                 "/": "./meta/permissioned",
               },
+              storefront: {
+                sections: [],
+              },
             },
             mint: {
               cauth_id: "ikmswJ8k6XzxQNAdyumJzdHnhyqeJQx",
@@ -139,7 +144,11 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
               has_audio: "",
               media: null,
               media_type: "Image",
-              name: "Meridian",
+              image: "",
+              marketplace_attributes: {
+                opensea: {},
+              },
+              name: ART_NAME,
               pack_options: {
                 is_openable: "",
                 item_slots: [],
@@ -180,6 +189,12 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
 
   console.log("UPLOAD RESPONSE:", uploadResponse);
 
+  const permissionResponse = await client.SetPermission({
+    objectId: objectID,
+    permission: "public",
+    writeToken: writeToken,
+  });
+
   /**
    * Update with image value & Finalize Content Object
    */
@@ -197,7 +212,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
-  await sleep(10000);
+  await sleep(10);
 
   console.log("New URL using Finalized hash", new_url);
   const metadataReadout = await client.AssetMetadata({
@@ -205,22 +220,23 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     objectId: objectID,
   });
   console.log("OBJECT METADATA", metadataReadout);
-  const replaceResponse = await client.MergeMetadata({
-    libraryId: LIBRARY_ID,
-    objectId: objectID,
-    writeToken: writeToken,
-    metadata: {
-      public: {
-        asset_metadata: {
-          nft: {
-            image: new_url,
-          },
-        },
-      },
-    },
-  });
 
-  console.log("REPLACE RESPONSE:", replaceResponse);
+  // const replaceResponse = await client.MergeMetadata({
+  //   libraryId: LIBRARY_ID,
+  //   objectId: objectID,
+  //   writeToken: writeToken,
+  //   metadata: {
+  //     public: {
+  //       asset_metadata: {
+  //         nft: {
+  //           image: new_url,
+  //         },
+  //       },
+  //     },
+  //   },
+  // });
+
+  // console.log("REPLACE RESPONSE:", replaceResponse);
 
   /**
    * Create the marketplace.
@@ -286,8 +302,8 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
    */
   const res_mkt = await marketplace.MarketplaceAddItem({
     nftObjectId: objectID,
-    nftObjectHash: NFT_TEMPLATE_HASH,
-    marketplaceObjectId: MARKETPLACE_HASH,
+    nftObjectHash: res_build.hash,
+    marketplaceObjectId: MARKETPLACE_OBJECTID,
     name: ART_NAME,
     price: ART_PRICE,
     currency: ART_CURRENCY,
@@ -308,11 +324,9 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     return result;
   }
 
-  let objectSKU = generateSKU(SKU_LENGTH);
-
   const res_store_section = await marketplace.StorefrontSectionAddItem({
     objectId: objectID,
-    sku: objectSKU,
+    sku: res_mkt.sku,
     name: ART_TYPE,
   });
 

@@ -15,7 +15,11 @@ import { btn, btnAccent, btnLink } from "../styles/button";
 import { colorGrey } from "../styles/colors";
 import Link from "next/link";
 
-const Navbar: FC = () => {
+interface NavbarProps {
+  onLoginClick: () => void;
+}
+
+const Navbar: FC<NavbarProps> = (props) => {
   const theme = useTheme();
   const isSizeMedium = useMediaQuery(theme.breakpoints.down("lg"));
 
@@ -77,11 +81,12 @@ const Navbar: FC = () => {
             margin: "0 2.4rem",
           }}
         ></span>
-        <Link href="/add">
-          <button css={{ ...btn, ...btnAccent, ...textSmall, ...textMedium }}>
-            Login
-          </button>
-        </Link>
+        <button
+          css={{ ...btn, ...btnAccent, ...textSmall, ...textMedium }}
+          onClick={props.onLoginClick}
+        >
+          Login
+        </button>
       </nav>
     </div>
   );

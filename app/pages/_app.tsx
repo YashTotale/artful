@@ -1,5 +1,5 @@
 // React Imports
-import { FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren, useState } from "react";
 import Head from "next/head";
 import { AppProps as DefaultAppProps } from "next/app";
 
@@ -13,10 +13,11 @@ import {
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import theme from "../src/theme";
 import createEmotionCache from "../src/createEmotionCache";
+import { colorPrimary } from "../styles/colors";
 
 // Components
 import Navbar from "../components/Navbar";
-import { colorPrimary } from "../styles/colors";
+import Login from "../components/Login";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -46,6 +47,7 @@ const App: FC<AppProps> = (props) => {
 const Page: FC<PropsWithChildren> = (props) => {
   const theme = useTheme();
   const isSizeSmall = useMediaQuery(theme.breakpoints.down("md"));
+  const [onLogin, setOnLogin] = useState(false);
 
   return (
     <div
@@ -55,7 +57,8 @@ const Page: FC<PropsWithChildren> = (props) => {
         backgroundColor: colorPrimary,
       }}
     >
-      <Navbar />
+      <Login open={onLogin} closeLogin={() => setOnLogin(false)} />
+      <Navbar onLoginClick={() => setOnLogin(!onLogin)} />
       {props.children}
     </div>
   );

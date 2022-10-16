@@ -1,20 +1,13 @@
 // React Imports
 import { FC, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import {
-  Control,
-  Controller,
-  SubmitHandler,
-  useController,
-  useForm,
-} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import InputField from "../components/InputField";
 
 // Style Imports
 import {
-  capitalize,
   FormHelperText,
   InputAdornment,
-  TextField,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
@@ -244,60 +237,6 @@ const NewArt: FC = () => {
         </button>
       </div>
     </form>
-  );
-};
-
-interface InputFieldProps {
-  name: keyof Inputs;
-  control: Control<Inputs>;
-  defaultValue?: string;
-  startAdornment?: JSX.Element;
-  required?: boolean;
-  label?: string;
-}
-
-const InputField: FC<InputFieldProps> = (props) => {
-  const {
-    field: { ref, ...priceProps },
-    formState,
-  } = useController({
-    name: props.name,
-    control: props.control,
-    rules: { required: props.required ?? "This field is required" },
-    defaultValue: props.defaultValue ?? "",
-  });
-
-  const error = formState.errors[props.name];
-  const label =
-    props.label ??
-    `${capitalize(props.name)}${props.required !== false ? "*" : ""}`;
-
-  return (
-    <TextField
-      {...priceProps}
-      inputRef={ref}
-      label={label}
-      variant="outlined"
-      type="text"
-      error={!!error}
-      helperText={error?.message}
-      fullWidth
-      sx={{
-        fontSize: "100%",
-        marginBottom: "16px",
-      }}
-      InputLabelProps={{
-        sx: {
-          fontSize: "100%",
-        },
-      }}
-      InputProps={{
-        sx: {
-          fontSize: "100%",
-        },
-        startAdornment: props.startAdornment,
-      }}
-    />
   );
 };
 
