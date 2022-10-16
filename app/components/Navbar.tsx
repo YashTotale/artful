@@ -75,7 +75,7 @@ const Navbar: FC = () => {
         ></span>
         <Link href="/new">
           <button css={{ ...btn, ...btnAccent, ...textSmall, ...textMedium }}>
-            Upload Art
+            Add Art
           </button>
         </Link>
       </nav>

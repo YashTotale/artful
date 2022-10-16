@@ -6,7 +6,7 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#556cd6",
+      main: "#3671E9",
     },
     secondary: {
       main: "#19857b",
@@ -14,6 +14,9 @@ const theme = createTheme({
     error: {
       main: red.A400,
     },
+  },
+  typography: {
+    fontFamily: '"Rubik", sans-serif',
   },
 });
 

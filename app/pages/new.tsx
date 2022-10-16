@@ -2,34 +2,40 @@
 import { FC, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
+// Style Imports
+import { InputAdornment, TextField } from "@mui/material";
+import { btn, btnAccent } from "../styles/button";
+import { textMedium, textSmall } from "../styles/text";
+
 type FileWithPreview = File & {
   preview: string;
 };
 
 const NewArt: FC = () => {
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [acceptedFile, setFile] = useState<FileWithPreview | null>(null);
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "image/jpeg": [".jpg", ".jpeg"],
     },
     multiple: false,
     onDrop: (acceptedFiles) => {
-      setFiles(
-        acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        )
+      const accepted = acceptedFiles[0];
+      setFile(
+        Object.assign(accepted, {
+          preview: URL.createObjectURL(accepted),
+        })
       );
     },
   });
 
   useEffect(() => {
-    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+    return () => {
+      acceptedFile && URL.revokeObjectURL(acceptedFile.preview);
+    };
   }, []);
 
   return (
-    <section className="container">
+    <section>
       <div
         {...getRootProps({
           css: {
@@ -37,6 +43,7 @@ const NewArt: FC = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
             padding: "20px",
             borderWidth: "2px",
             borderRadius: "2px",
@@ -51,54 +58,121 @@ const NewArt: FC = () => {
       >
         <input {...getInputProps()} />
         <p>
-          Drag 'n' drop some images of your artwork here, or click to select
-          images
+          Drag 'n' drop an image of your artwork here, or click to select an
+          image
         </p>
       </div>
       <aside
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "center",
+        css={{
+          display: "grid",
+          gridTemplateColumns: "50% 50%",
+          // gap: "16px",
           marginTop: 16,
         }}
       >
-        {files.map((file) => (
+        <div
+          css={{
+            display: "inline-flex",
+            borderRadius: 2,
+            border: "1px solid #eaeaea",
+            marginBottom: 8,
+            padding: 4,
+            boxSizing: "border-box",
+          }}
+        >
           <div
-            style={{
-              display: "inline-flex",
-              borderRadius: 2,
-              border: "1px solid #eaeaea",
-              marginBottom: 8,
-              padding: 4,
-              boxSizing: "border-box",
+            css={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minWidth: 0,
+              width: "100%",
+              overflow: "hidden",
             }}
-            key={file.name}
           >
-            <div
-              style={{
-                display: "flex",
-                minWidth: 0,
-                overflow: "hidden",
-              }}
-            >
+            {acceptedFile ? (
               <img
-                src={file.preview}
-                style={{
+                src={acceptedFile.preview}
+                css={{
                   display: "block",
                   objectFit: "cover",
-                  width: "100%",
                   height: "250px",
                 }}
                 onLoad={() => {
-                  URL.revokeObjectURL(file.preview);
+                  URL.revokeObjectURL(acceptedFile.preview);
                 }}
               />
-            </div>
+            ) : (
+              <span
+                css={{
+                  textAlign: "center",
+                  width: "100%",
+                  lineHeight: "250px",
+                }}
+              >
+                No Image Uploaded
+              </span>
+            )}
           </div>
-        ))}
+        </div>
+        <div css={{ marginLeft: "16px" }}>
+          <TextField
+            label="Name"
+            variant="outlined"
+            fullWidth
+            sx={{
+              fontSize: "100%",
+              marginBottom: "16px",
+            }}
+            InputLabelProps={{
+              sx: {
+                fontSize: "100%",
+              },
+            }}
+            InputProps={{
+              sx: {
+                fontSize: "100%",
+              },
+            }}
+          />
+          <TextField
+            label="Price"
+            variant="outlined"
+            fullWidth
+            sx={{
+              fontSize: "100%",
+            }}
+            InputLabelProps={{
+              sx: {
+                fontSize: "100%",
+              },
+            }}
+            InputProps={{
+              sx: {
+                fontSize: "100%",
+              },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <span css={{ fontSize: "100%" }}>$</span>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </div>
       </aside>
+      <div css={{ display: "flex", marginTop: "16px" }}>
+        <button
+          css={{
+            ...btn,
+            ...btnAccent,
+            ...textSmall,
+            ...textMedium,
+            margin: "auto",
+          }}
+        >
+          Upload
+        </button>
+      </div>
     </section>
   );
 };
