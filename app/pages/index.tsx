@@ -1,21 +1,26 @@
-import * as React from 'react';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Link from '../src/Link';
-import ProTip from '../src/ProTip';
-import Copyright from '../src/Copyright';
+// React Imports
+import { FC } from "react";
 
-export default function Home() {
+// MUI Imports
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+
+// Components
+import Link from "../src/Link";
+import ProTip from "../src/ProTip";
+import Copyright from "../src/Copyright";
+
+const Home: FC = () => {
   return (
     <Container maxWidth="lg">
       <Box
         sx={{
           my: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom>
@@ -29,4 +34,6 @@ export default function Home() {
       </Box>
     </Container>
   );
-}
+};
+
+export default Home;
