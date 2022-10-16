@@ -12,16 +12,18 @@ import { EluvioLive } from "../../elv-live-js/src/EluvioLive";
 import { Marketplace } from "../../elv-live-js/src/Marketplace";
 
 type ProcessedFiles = {
+  image: File;
+  type: string;
   name: string;
   price: string;
-  image: File;
+  shares: string;
 };
 
 const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   onError(error, req, res) {
     res
       .status(501)
-      .json({ error: `Sorry something Happened! ${error.message}` });
+      .json({ error: `Sorry something happened! ${error.message}` });
   },
   onNoMatch(req, res) {
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
@@ -40,21 +42,22 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
 
   const buffer = await readFile(fields.image.filepath);
 
-  const INPUT_NAME = fields.name;
-  const INPUT_FILE = buffer; // array buffer
-  const INPUT_PRICE = fields.price; // number for how much they're selling it at
-  const INPUT_CURRENCY = "USD"; // USD for now
-  let INPUT_MAX_COPIES; //since only one unique art piece
-  const INPUT_SECTION = "Commercial"; // Set this to either "fundraiser" or "commercial"
-  if (INPUT_SECTION == "Commercial") {
-    INPUT_MAX_COPIES = 1;
-  } else {
-    // Read something in
-    INPUT_MAX_COPIES = 100; // TODO
-  }
+  const ART_NAME = fields.name;
+  const ART_ORIGIN = "MOMA";
+  const ART_DESCRIPTION = "Amazing art";
+  const ART_PRICE = fields.price; // number for how much they're selling it at
+  const ART_TYPE = fields.type; // Set this to either "fundraiser" or "commercial"
+  const ART_SHARES = fields.shares;
 
-  const INPUT_FILESIZE = buffer.length;
-  const INPUT_FILENAME = `${fields.image.newFilename}.jpg`; // every time the corresp function below is called, a new map is created. so each file name doesn't need to be unique.
+  const ART_IMAGE_FILE = buffer; // array buffer
+  const ART_IMAGE_FILE_SIZE = buffer.length;
+  const ART_IMAGE_FILENAME = `${fields.image.newFilename}.jpg`; // every time the corresp function below is called, a new map is created. so each file name doesn't need to be unique.
+
+  const ART_CURRENCY = "USD"; // USD for now
+  const ART_MAX_COPIES = ART_TYPE === "fundraiser" ? parseInt(ART_SHARES) : 1;
+
+  var eluvio_description = `${ART_NAME} from ${ART_ORIGIN}: ${ART_DESCRIPTION}`;
+
   const MAIN_OBJECT_ID = "iq__suqRJUt2vmXsyiWS5ZaSGwtFU9R"; // No idea what this does
   const CONFIG_URL = "https://main.net955305.contentfabric.io"; //
   const MARKETPLACE_HASH =
@@ -101,7 +104,53 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     options: {
       type: NFT_TEMPLATE_HASH,
       meta: {
-        name: INPUT_FILENAME,
+        permissioned: {
+          mint_private: {},
+        },
+        public: {
+          name: ART_NAME,
+          description: eluvio_description,
+          asset_metadata: {
+            asset_type: "primary",
+            title_type: "nft_template",
+            slug: `artful-${ART_NAME.replace(" ", "-")}`,
+            title: ART_NAME,
+            display_title: ART_NAME,
+            info: {
+              permission: {
+                "/": "./meta/permissioned",
+              },
+            },
+            mint: {
+              cauth_id: "ikmswJ8k6XzxQNAdyumJzdHnhyqeJQx",
+              merge_meta: {},
+              token_template: "",
+            },
+            nft: {
+              attributes: [],
+              copyright: "",
+              created_at: "",
+              creator: "",
+              description: ART_DESCRIPTION,
+              display_name: ART_NAME,
+              edition_name: "",
+              enable_watermark: "",
+              generative: "",
+              has_audio: "",
+              media: null,
+              media_type: "Image",
+              name: "Meridian",
+              pack_options: {
+                is_openable: "",
+                item_slots: [],
+                open_animation: "",
+              },
+              playable: false,
+              rich_text: "",
+              template_id: "Ei5d6Ki1x9f6HzRee5Kj2N",
+            },
+          },
+        },
       },
     },
   });
@@ -121,10 +170,10 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     encrypted: false,
     fileInfo: [
       {
-        path: INPUT_FILENAME,
+        path: ART_IMAGE_FILENAME,
         mime_type: "image/jpeg",
-        size: INPUT_FILESIZE,
-        data: INPUT_FILE,
+        size: ART_IMAGE_FILE_SIZE,
+        data: ART_IMAGE_FILE,
       },
     ],
   });
@@ -132,7 +181,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   console.log("UPLOAD RESPONSE:", uploadResponse);
 
   /**
-   * Finalize Content Object
+   * Update with image value & Finalize Content Object
    */
 
   const finalizeResponse = await client.FinalizeContentObject({
@@ -141,8 +190,37 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     writeToken: writeToken,
     awaitCommitConfirmation: true,
   });
-
   console.log("FINALIZE RESPONSE:", finalizeResponse);
+
+  var new_url = `https://main.net955305.contentfabric.io/s/main/q/${finalizeResponse.hash}/files/${ART_IMAGE_FILENAME}`;
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+  await sleep(10000);
+
+  console.log("New URL using Finalized hash", new_url);
+  const metadataReadout = await client.AssetMetadata({
+    libraryId: LIBRARY_ID,
+    objectId: objectID,
+  });
+  console.log("OBJECT METADATA", metadataReadout);
+  const replaceResponse = await client.MergeMetadata({
+    libraryId: LIBRARY_ID,
+    objectId: objectID,
+    writeToken: writeToken,
+    metadata: {
+      public: {
+        asset_metadata: {
+          nft: {
+            image: new_url,
+          },
+        },
+      },
+    },
+  });
+
+  console.log("REPLACE RESPONSE:", replaceResponse);
 
   /**
    * Create the marketplace.
@@ -163,7 +241,6 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     elvlv = new EluvioLive(config);
     await elvlv.Init({ debugLogging });
 
-    // @ts-expect-error Eluvio has no TS definitions
     marketplace = new Marketplace(config);
     await marketplace.Init({ debugLogging });
   };
@@ -183,9 +260,9 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     tenantId: TENANT_ID,
     mintHelperAddr: MINT_HELPER, //"0x59e79eFE007F5208857a646Db5cBddA82261Ca81",
     minterAddr: MINTER,
-    totalSupply: INPUT_MAX_COPIES,
-    collectionName: INPUT_NAME,
-    collectionSymbol: INPUT_NAME,
+    totalSupply: ART_MAX_COPIES,
+    collectionName: ART_NAME,
+    collectionSymbol: ART_NAME,
     // keep the 7 days default hold. is this how long they have to keep for minimum?
     contractUri: "",
     proxyAddress: "",
@@ -211,10 +288,10 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     nftObjectId: objectID,
     nftObjectHash: NFT_TEMPLATE_HASH,
     marketplaceObjectId: MARKETPLACE_HASH,
-    name: INPUT_FILENAME,
-    price: INPUT_PRICE,
-    currency: INPUT_CURRENCY,
-    maxPerUser: INPUT_MAX_COPIES,
+    name: ART_NAME,
+    price: ART_PRICE,
+    currency: ART_CURRENCY,
+    maxPerUser: ART_MAX_COPIES,
     forSale: true,
   });
 
@@ -236,7 +313,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   const res_store_section = await marketplace.StorefrontSectionAddItem({
     objectId: objectID,
     sku: objectSKU,
-    name: INPUT_SECTION,
+    name: ART_TYPE,
   });
 
   console.log("SECTION RESPONSE:", res_store_section);

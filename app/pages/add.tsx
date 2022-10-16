@@ -15,6 +15,8 @@ import {
   FormHelperText,
   InputAdornment,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import { btn, btnAccent } from "../styles/button";
 import { textMedium, textSmall } from "../styles/text";
@@ -25,12 +27,14 @@ type FileWithPreview = File & {
 
 interface Inputs {
   image: File | null;
+  type: string;
   name: string;
   price: string;
+  shares: string;
 }
 
 const NewArt: FC = () => {
-  const { control, handleSubmit, formState } = useForm<Inputs>();
+  const { control, handleSubmit, watch, formState } = useForm<Inputs>();
   const [acceptedFile, setFile] = useState<FileWithPreview | null>(null);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -152,7 +156,7 @@ const NewArt: FC = () => {
                   css={{
                     display: "block",
                     objectFit: "cover",
-                    height: "250px",
+                    height: "300px",
                   }}
                   onLoad={() => {
                     URL.revokeObjectURL(acceptedFile.preview);
@@ -163,7 +167,7 @@ const NewArt: FC = () => {
                   css={{
                     textAlign: "center",
                     width: "100%",
-                    lineHeight: "250px",
+                    lineHeight: "300px",
                   }}
                 >
                   No Image Uploaded
@@ -178,6 +182,39 @@ const NewArt: FC = () => {
           )}
         </div>
         <div css={{ marginLeft: "16px" }}>
+          <Controller
+            name="type"
+            control={control}
+            defaultValue="commercial"
+            render={({ field }) => (
+              <ToggleButtonGroup
+                sx={{
+                  marginBottom: "16px",
+                }}
+                fullWidth
+                exclusive
+                {...field}
+                onChange={(e, value: string) => {
+                  field.onChange(value);
+                }}
+              >
+                <ToggleButton
+                  value="commercial"
+                  key="commercial"
+                  css={{ fontSize: "100%", textTransform: "none" }}
+                >
+                  Commercial
+                </ToggleButton>
+                <ToggleButton
+                  value="fundraiser"
+                  key="fundraiser"
+                  css={{ fontSize: "100%", textTransform: "none" }}
+                >
+                  Fundraiser
+                </ToggleButton>
+              </ToggleButtonGroup>
+            )}
+          />
           <InputField name="name" control={control} />
           <InputField
             name="price"
@@ -188,6 +225,9 @@ const NewArt: FC = () => {
               </InputAdornment>
             }
           />
+          {watch("type") === "fundraiser" && (
+            <InputField name="shares" control={control} defaultValue="100" />
+          )}
         </div>
       </aside>
       <div css={{ display: "flex", marginTop: "16px" }}>
@@ -210,6 +250,7 @@ const NewArt: FC = () => {
 interface InputFieldProps {
   name: keyof Inputs;
   control: Control<Inputs>;
+  defaultValue?: string;
   startAdornment?: JSX.Element;
   required?: boolean;
   label?: string;
@@ -223,7 +264,7 @@ const InputField: FC<InputFieldProps> = (props) => {
     name: props.name,
     control: props.control,
     rules: { required: props.required ?? "This field is required" },
-    defaultValue: "",
+    defaultValue: props.defaultValue ?? "",
   });
 
   const error = formState.errors[props.name];

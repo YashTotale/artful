@@ -65,12 +65,10 @@ const Navbar: FC = () => {
           <Link href="/marketplace">
             <li css={liStyle}>Marketplace</li>
           </Link>
+          <Link href="/add">
+            <li css={liStyle}>Add Art</li>
+          </Link>
         </ul>
-        {/* <button
-          css={{ ...btn, ...btnLink, ...text, ...textSmall, ...textMedium }}
-        >
-          Login
-        </button> */}
         <span
           css={{
             height: "2.4rem",
@@ -81,7 +79,7 @@ const Navbar: FC = () => {
         ></span>
         <Link href="/add">
           <button css={{ ...btn, ...btnAccent, ...textSmall, ...textMedium }}>
-            Add Art
+            Login
           </button>
         </Link>
       </nav>
