@@ -3,7 +3,13 @@ import { FC } from "react";
 
 // Style Imports
 import { useTheme, useMediaQuery } from "@mui/material";
-import { text, textMedium, textRegular, textSmall } from "../styles/text";
+import {
+  text,
+  textLarge,
+  textMedium,
+  textRegular,
+  textSmall,
+} from "../styles/text";
 import { listItem, listItemInline } from "../styles/list";
 import { btn, btnAccent, btnLink } from "../styles/button";
 import { colorGrey } from "../styles/colors";
@@ -42,11 +48,11 @@ const Navbar: FC = () => {
             src="images/logo.png"
             alt="Artful Logo"
             css={{
-              height: 40,
+              height: 75,
               marginRight: "8px",
             }}
           />
-          <span css={{ ...text, ...textMedium }}>Artful</span>
+          <span css={{ ...text, ...textLarge }}>Artful</span>
         </div>
       </Link>
       <nav

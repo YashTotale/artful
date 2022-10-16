@@ -14,6 +14,7 @@ import {
 import { btn, btnAccent, btnFlex } from "../styles/button";
 import { colorWhite } from "../styles/colors";
 import { grid, grid1x2, gridCentered, gridGapSmall } from "../styles/layout";
+import Link from "next/link";
 
 const Home: FC = () => {
   const theme = useTheme();
@@ -41,7 +42,7 @@ const Home: FC = () => {
                 marginBottom: "2rem",
               }}
             >
-              Physical Art. Online Experience.
+              Physical Art. Online Experiences.
             </h1>
             <p
               css={{
@@ -55,41 +56,43 @@ const Home: FC = () => {
               in the museums of the world without leaving the comfort of your
               couch.
             </p>
-            <button
-              css={{
-                width: isSizeMedium ? undefined : "23rem",
-                ...btn,
-                ...btnFlex,
-                ...btnAccent,
-              }}
-            >
-              <span
+            <Link href="/marketplace">
+              <button
                 css={{
-                  ...textStandard,
-                  ...textMedium,
+                  width: isSizeMedium ? undefined : "23rem",
+                  ...btn,
+                  ...btnFlex,
+                  ...btnAccent,
                 }}
               >
-                Try for FREE
-              </span>
-              <div
-                css={{
-                  display: "inline-flex",
-                  width: "3.2rem",
-                  height: "3.2rem",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: colorWhite,
-                  borderRadius: "100%",
-                  WebkitBorderRadius: "100%",
-                  MozBorderRadius: "100%",
-                  MsBorderRadius: "100%",
-                  OBorderRadius: "100%",
-                  marginLeft: "2.4rem",
-                }}
-              >
-                <img src="images/chevron-right.svg" alt="Right Icon" />
-              </div>
-            </button>
+                <span
+                  css={{
+                    ...textStandard,
+                    ...textMedium,
+                  }}
+                >
+                  Try for FREE
+                </span>
+                <div
+                  css={{
+                    display: "inline-flex",
+                    width: "3.2rem",
+                    height: "3.2rem",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: colorWhite,
+                    borderRadius: "100%",
+                    WebkitBorderRadius: "100%",
+                    MozBorderRadius: "100%",
+                    MsBorderRadius: "100%",
+                    OBorderRadius: "100%",
+                    marginLeft: "2.4rem",
+                  }}
+                >
+                  <img src="images/chevron-right.svg" alt="Right Icon" />
+                </div>
+              </button>
+            </Link>
           </div>
           <img
             src="images/art-museum.svg"

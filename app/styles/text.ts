@@ -21,6 +21,10 @@ export const textMedium = {
   fontWeight: "medium",
 };
 
+export const textLarge = {
+  fontSize: "3.5rem",
+};
+
 export const h1 = {
   fontWeight: "bold",
   lineHeight: "1.5",
