@@ -21,7 +21,7 @@ export const btnAccent = {
   backgroundColor: colorAccent,
   color: colorWhite,
   "&:hover": {
-    color: colorAccentHover,
+    backgroundColor: colorAccentHover,
   },
 };
 
