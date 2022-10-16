@@ -72,7 +72,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
   },
 }).post(async (req: NextApiRequest, res: NextApiResponse) => {
-  const { email, password } = req.body;
+  const { email, password } = JSON.parse(req.body);
 
   //find a user by their email
   const user = (await User.findOne({
@@ -81,7 +81,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
 
   //if user email is found, compare password with bcrypt
   if (user) {
-    const isSame = await bcrypt.compare(password, user.password);
+    const isSame = password === user.password; // await bcrypt.compare(password, user.password);
 
     //if password is the same
     //generate token with the user's id and the secretKey in the env file

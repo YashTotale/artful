@@ -11,6 +11,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { CacheProvider, EmotionCache } from "@emotion/react";
+import { SnackbarProvider } from "notistack";
 import theme from "../src/theme";
 import createEmotionCache from "../src/createEmotionCache";
 import { colorPrimary } from "../styles/colors";
@@ -57,9 +58,11 @@ const Page: FC<PropsWithChildren> = (props) => {
         backgroundColor: colorPrimary,
       }}
     >
-      <Login open={onLogin} closeLogin={() => setOnLogin(false)} />
-      <Navbar onLoginClick={() => setOnLogin(!onLogin)} />
-      {props.children}
+      <SnackbarProvider maxSnack={3}>
+        <Login open={onLogin} closeLogin={() => setOnLogin(false)} />
+        <Navbar onLoginClick={() => setOnLogin(!onLogin)} />
+        {props.children}
+      </SnackbarProvider>
     </div>
   );
 };

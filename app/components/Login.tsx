@@ -5,6 +5,7 @@ import InputField from "./InputField";
 
 // Style Imports
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { useSnackbar } from "notistack";
 import { colorPrimary } from "../styles/colors";
 import { btn, btnAccent } from "../styles/button";
 import { textMedium, textSmall } from "../styles/text";
@@ -20,11 +21,30 @@ interface LoginProps {
 }
 
 const Login: FC<LoginProps> = (props) => {
-  const { control, handleSubmit } = useForm<Inputs>({
+  const { enqueueSnackbar } = useSnackbar();
+  const { control, handleSubmit, reset } = useForm<Inputs>({
     shouldUnregister: true,
   });
 
-  const onSubmit: SubmitHandler<Inputs> = (inputs) => {};
+  const onSubmit: SubmitHandler<Inputs> = async (inputs) => {
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        body: JSON.stringify(inputs),
+      });
+      console.log(await response.json());
+      enqueueSnackbar("Logged In!", {
+        variant: "success",
+      });
+      props.closeLogin();
+    } catch (e: any) {
+      enqueueSnackbar(e.message, {
+        variant: "error",
+      });
+    } finally {
+      reset();
+    }
+  };
 
   return (
     <Dialog

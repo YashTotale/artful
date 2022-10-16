@@ -39,8 +39,10 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
       resolve(formFields);
     });
   });
-
+  //Console.log(fields)
   const buffer = await readFile(fields.image.filepath);
+
+  console.log(fields);
 
   const ART_NAME = fields.name;
   const ART_ORIGIN = "MOMA";
@@ -54,7 +56,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   const ART_IMAGE_FILENAME = `${fields.image.newFilename}.jpg`; // every time the corresp function below is called, a new map is created. so each file name doesn't need to be unique.
 
   const ART_CURRENCY = "USD"; // USD for now
-  const ART_MAX_COPIES = ART_TYPE === "fundraiser" ? parseInt(ART_SHARES) : 1;
+  const ART_MAX_COPIES = ART_TYPE === "Fundraiser" ? parseInt(ART_SHARES) : 1;
 
   var eluvio_description = `${ART_NAME} from ${ART_ORIGIN}: ${ART_DESCRIPTION}`;
 
@@ -123,8 +125,14 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
                 "/": "./meta/permissioned",
               },
               storefront: {
-                sections: [],
+                sections: [
+                  {
+                    section_header: ART_TYPE,
+                    section_subheader: "",
+                  },
+                ],
               },
+              items: [],
             },
             mint: {
               cauth_id: "ikmswJ8k6XzxQNAdyumJzdHnhyqeJQx",
@@ -221,22 +229,36 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   });
   console.log("OBJECT METADATA", metadataReadout);
 
-  // const replaceResponse = await client.MergeMetadata({
-  //   libraryId: LIBRARY_ID,
-  //   objectId: objectID,
-  //   writeToken: writeToken,
-  //   metadata: {
-  //     public: {
-  //       asset_metadata: {
-  //         nft: {
-  //           image: new_url,
-  //         },
-  //       },
-  //     },
-  //   },
-  // });
+  const editResponse = await client.EditContentObject({
+    libraryId: LIBRARY_ID,
+    objectId: objectID,
+  });
 
-  // console.log("REPLACE RESPONSE:", replaceResponse);
+  const writeTokenTwo = editResponse.writeToken;
+
+  const replaceResponse = await client.MergeMetadata({
+    libraryId: LIBRARY_ID,
+    objectId: objectID,
+    writeToken: writeTokenTwo,
+    metadata: {
+      public: {
+        asset_metadata: {
+          nft: {
+            image: new_url,
+          },
+        },
+      },
+    },
+  });
+
+  console.log("REPLACE RESPONSE:", replaceResponse);
+
+  const finalResponseTwo = await client.FinalizeContentObject({
+    libraryId: LIBRARY_ID,
+    objectId: objectID,
+    writeToken: writeTokenTwo,
+    awaitCommitConfirmation: true,
+  });
 
   /**
    * Create the marketplace.
@@ -323,6 +345,8 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     }
     return result;
   }
+
+  console.log(ART_TYPE);
 
   const res_store_section = await marketplace.StorefrontSectionAddItem({
     objectId: objectID,

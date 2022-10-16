@@ -51,6 +51,8 @@ const NewArt: FC = () => {
     formData.append("name", inputs.name);
     formData.append("price", inputs.price);
     formData.append("image", inputs.image);
+    formData.append("type", inputs.type);
+    formData.append("shares", inputs.shares);
 
     const response = await fetch("/api/upload-art", {
       method: "POST",
@@ -178,7 +180,7 @@ const NewArt: FC = () => {
           <Controller
             name="type"
             control={control}
-            defaultValue="commercial"
+            defaultValue="Commercial"
             render={({ field }) => (
               <ToggleButtonGroup
                 sx={{
@@ -192,15 +194,15 @@ const NewArt: FC = () => {
                 }}
               >
                 <ToggleButton
-                  value="commercial"
-                  key="commercial"
+                  value="Commercial"
+                  key="Commercial"
                   css={{ fontSize: "100%", textTransform: "none" }}
                 >
                   Commercial
                 </ToggleButton>
                 <ToggleButton
-                  value="fundraiser"
-                  key="fundraiser"
+                  value="Fundraiser"
+                  key="Fundraiser"
                   css={{ fontSize: "100%", textTransform: "none" }}
                 >
                   Fundraiser
