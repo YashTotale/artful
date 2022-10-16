@@ -7,10 +7,9 @@ import nextConnect from "next-connect";
 import formidable, { File } from "formidable";
 
 // Eluvio Imports
-// @ts-expect-error Eluvio has no TS definitions
-import { ElvClient } from "@eluvio/elv-client-js";
-import EluvioLive from "../../elv-live-js/src/EluvioLive";
-import Marketplace from "../../elv-live-js/src/Marketplace";
+import { ElvClient } from "../../elv-client-js/src/ElvClient";
+import { EluvioLive } from "../../elv-live-js/src/EluvioLive";
+import { Marketplace } from "../../elv-live-js/src/Marketplace";
 
 type ProcessedFiles = {
   name: string;
@@ -54,8 +53,8 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     INPUT_MAX_COPIES = 100; // TODO
   }
 
-  const INPUT_FILESIZE = 0;
-  const INPUT_FILENAME = "file_to_upload"; // every time the corresp function below is called, a new map is created. so each file name doesn't need to be unique.
+  const INPUT_FILESIZE = buffer.length;
+  const INPUT_FILENAME = `${fields.image.newFilename}.jpg`; // every time the corresp function below is called, a new map is created. so each file name doesn't need to be unique.
   const MAIN_OBJECT_ID = "iq__suqRJUt2vmXsyiWS5ZaSGwtFU9R"; // No idea what this does
   const CONFIG_URL = "https://main.net955305.contentfabric.io"; //
   const MARKETPLACE_HASH =
@@ -77,11 +76,21 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   const client = await ElvClient.FromConfigurationUrl({
     configUrl: "https://main.net955305.contentfabric.io/config",
   });
+
+  console.log("CLIENT:", client);
+
   const wallet = await client.GenerateWallet();
+
+  console.log("WALLET:", wallet);
+
   const signer = await wallet.AddAccount({
-    privateKey:
-      "0x5a1a317daf794fa9338821f4a1024ad65ed311bf0a875b722c7c518f0c257353",
+    privateKey: process.env.PRIVATE_KEY,
   });
+  console.log("SIGNER:", signer);
+
+  const res_signer = await client.SetSigner({ signer });
+
+  console.log("SIGNER RESPONSE:", res_signer);
 
   /**
    * Create content object with our file.
@@ -96,6 +105,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
       },
     },
   });
+  console.log("CREATE RESPONSE:", createResponse);
 
   const objectID = createResponse.id;
   const writeToken = createResponse.write_token;
@@ -104,7 +114,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
    * Upload the files (combine later).
    */
 
-  await client.uploadFiles({
+  const uploadResponse = await client.UploadFiles({
     libraryId: LIBRARY_ID,
     objectId: objectID,
     writeToken: writeToken,
@@ -112,23 +122,27 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     fileInfo: [
       {
         path: INPUT_FILENAME,
-        type: "file",
+        mime_type: "image/jpeg",
         size: INPUT_FILESIZE,
         data: INPUT_FILE,
       },
     ],
   });
 
+  console.log("UPLOAD RESPONSE:", uploadResponse);
+
   /**
    * Finalize Content Object
    */
 
-  await client.FinalizeContentObject({
+  const finalizeResponse = await client.FinalizeContentObject({
     libraryId: LIBRARY_ID,
     objectId: objectID,
     writeToken: writeToken,
-    awaitCommitConfirmation: false,
+    awaitCommitConfirmation: true,
   });
+
+  console.log("FINALIZE RESPONSE:", finalizeResponse);
 
   /**
    * Create the marketplace.
@@ -156,6 +170,9 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
 
   await Init();
 
+  console.log("MARKETPLACE:", marketplace);
+  console.log("ELUVIO LIVE:", elvlv);
+
   /**
    * Create contract. Hopefully this is internally connected to the actual content object.
    */
@@ -174,6 +191,8 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     proxyAddress: "",
   });
 
+  console.log("CONTRACT:", contract);
+
   /**
    * Build the NFT.
    */
@@ -182,6 +201,8 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     objectId: objectID,
     nftDir: null,
   });
+
+  console.log("BUILD RESPONSE:", res_build);
 
   /**
    * Put the nft on the marketplace.
@@ -196,6 +217,8 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     maxPerUser: INPUT_MAX_COPIES,
     forSale: true,
   });
+
+  console.log("ADD RESPONSE:", res_mkt);
 
   function generateSKU(length: number) {
     var result = "";
@@ -216,7 +239,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
     name: INPUT_SECTION,
   });
 
-  await client.SetSigner({ signer });
+  console.log("SECTION RESPONSE:", res_store_section);
 
   res.status(200).json({ data: "success" });
 });
