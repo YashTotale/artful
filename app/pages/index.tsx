@@ -41,7 +41,7 @@ const Home: FC = () => {
                 marginBottom: "2rem",
               }}
             >
-              Discover & Invest in Curated Art!
+              Physical Art. Online Experience.
             </h1>
             <p
               css={{
@@ -51,8 +51,9 @@ const Home: FC = () => {
                 ...textRegular,
               }}
             >
-              Artful is a decentralized physical art marketplace that empowers
-              the creator economy.
+              The premier online experience for any Aesthete. Immerse yourself
+              in the museums of the world without leaving the comfort of your
+              couch.
             </p>
             <button
               css={{

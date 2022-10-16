@@ -52,10 +52,7 @@ const Navbar: FC = () => {
         }}
       >
         <ul>
-          <li css={liStyle}>Products</li>
-          <li css={liStyle}>Features</li>
-          <li css={liStyle}>About</li>
-          <li css={liStyle}>Contact</li>
+          <li css={liStyle}>Marketplace</li>
         </ul>
         <button
           css={{ ...btn, ...btnLink, ...text, ...textSmall, ...textMedium }}
