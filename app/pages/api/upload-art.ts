@@ -349,7 +349,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   console.log(ART_TYPE);
 
   const res_store_section = await marketplace.StorefrontSectionAddItem({
-    objectId: objectID,
+    objectId: MARKETPLACE_OBJECTID,
     sku: res_mkt.sku,
     name: ART_TYPE,
   });
