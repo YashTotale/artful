@@ -35,7 +35,14 @@ const Navbar: FC = () => {
           alignItems: "center",
         }}
       >
-        <img src="images/logo.svg" alt="Artful brand logo" />
+        <img
+          src="images/logo.png"
+          alt="Artful Logo"
+          css={{
+            height: 40,
+            marginRight: "8px",
+          }}
+        />
         <span css={{ ...text, ...textMedium }}>Artful</span>
       </div>
       <nav
