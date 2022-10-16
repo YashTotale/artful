@@ -1,7 +1,12 @@
 // React Imports
 import { FC, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { Controller, useController, useForm } from "react-hook-form";
+import {
+  Controller,
+  SubmitHandler,
+  useController,
+  useForm,
+} from "react-hook-form";
 
 // Style Imports
 import { FormHelperText, InputAdornment, TextField } from "@mui/material";
@@ -13,7 +18,7 @@ type FileWithPreview = File & {
 };
 
 interface Inputs {
-  file: File | null;
+  image: File | null;
   name: string;
   price: string;
 }
@@ -53,7 +58,21 @@ const NewArt: FC = () => {
     },
   });
 
-  const onSubmit = () => {};
+  const onUpload: SubmitHandler<Inputs> = async (inputs) => {
+    if (!inputs.image) return;
+
+    const formData = new FormData();
+    formData.append("name", inputs.name);
+    formData.append("price", inputs.price);
+    formData.append("image", inputs.image);
+
+    const response = await fetch("/api/upload-art", {
+      method: "POST",
+      body: formData,
+    });
+
+    console.log(await response.json());
+  };
 
   useEffect(() => {
     return () => {
@@ -62,10 +81,10 @@ const NewArt: FC = () => {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onUpload)}>
       <Controller
         control={control}
-        name="file"
+        name="image"
         defaultValue={null}
         rules={{
           required: "Image is required",
@@ -118,7 +137,7 @@ const NewArt: FC = () => {
               display: "inline-flex",
               borderRadius: 2,
               border: `1px solid ${
-                !!formState.errors.file ? "red" : "#eaeaea"
+                !!formState.errors.image ? "red" : "#eaeaea"
               }`,
               marginBottom: 8,
               padding: 4,
@@ -161,9 +180,9 @@ const NewArt: FC = () => {
               )}
             </div>
           </div>
-          {!!formState.errors.file && (
+          {!!formState.errors.image && (
             <FormHelperText error>
-              {formState.errors.file.message}
+              {formState.errors.image.message}
             </FormHelperText>
           )}
         </div>

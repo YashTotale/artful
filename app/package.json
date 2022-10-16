@@ -10,19 +10,24 @@
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
   },
   "dependencies": {
+    "@eluvio/elv-client-js": "^3.2.33",
     "@emotion/cache": "latest",
     "@emotion/react": "latest",
     "@emotion/server": "latest",
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
     "@mui/material": "latest",
+    "formidable": "^2.0.1",
     "next": "latest",
+    "next-connect": "^0.13.0",
+    "node-fetch": "^3.2.10",
     "react": "latest",
     "react-dom": "latest",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.37.0"
   },
   "devDependencies": {
+    "@types/formidable": "^2.0.5",
     "@types/node": "latest",
     "@types/react": "latest",
     "eslint": "latest",
