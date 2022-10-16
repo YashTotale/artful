@@ -12,6 +12,11 @@ export const btn = {
   cursor: "pointer",
 };
 
+export const btnFlex = {
+  display: "inline-flex",
+  alignItems: "center",
+};
+
 export const btnAccent = {
   backgroundColor: colorAccent,
   color: colorWhite,

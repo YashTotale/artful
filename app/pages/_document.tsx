@@ -18,15 +18,14 @@ export default class MyDocument extends Document {
         }}
       >
         <Head>
-          {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
           <link rel="shortcut icon" href="/favicon.ico" />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-          />
           <meta name="emotion-insertion-point" content="" />
           {(this.props as any).emotionStyleTags}
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap"
+          />
         </Head>
         <body
           css={{
@@ -35,6 +34,7 @@ export default class MyDocument extends Document {
             color: colorWhite,
             width: "100%",
             overflowX: "hidden",
+            fontFamily: '"Rubik", sans-serif',
           }}
         >
           <Main />
